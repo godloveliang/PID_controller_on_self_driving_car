@@ -1,3 +1,11 @@
+# write_up
+This project use PID to control the steer_value of the car.
+## The effect each of the P, I, D components 
+
+
+
+
+
 # CarND-Controls-PID
 Self-Driving Car Engineer Nanodegree Program
 

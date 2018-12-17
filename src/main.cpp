@@ -32,10 +32,34 @@ int main()
 {
   uWS::Hub h;
 
-  PID pid;
+  // PID pid;
   // TODO: Initialize the pid variable.
+ 
+  // try 1, can keep on the lane but wave sharply.
+  //pid.Init(0.15, 0.005, 3.0);
 
-  h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  //try 2, 
+  //pid.Init(0.12, 0.005, 3.0);
+ 
+  //try 3
+  // pid.Init(0.13, 0.0003, 3.0);
+
+  //double twiddle_p[3] = {0.13, 0.0003, 3.0};
+  double twiddle_p[3] = {0.12, 0.00029, 3.5};
+  double twiddle_dp[3] = {0.005, 0.00001, 0.1}; 
+
+  int n=0;
+  double total_err = 0.0;
+  double best_err = 100000;
+  //k_par used to traversing the index of twiddle_p/dp;
+  //k_circle used to show how many circles the car has drived,nearly 1000 steps amount to 1 circle.
+  int k_par = 0;
+  int k_circle = 0;
+  int n_cout = 0;
+  double total_i_err = 0.0;
+
+  h.onMessage([&twiddle_p, &twiddle_dp, &n, &total_err, &best_err, &k_par, &k_circle, &n_cout, &total_i_err]
+		  (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -57,15 +81,92 @@ int main()
           * NOTE: Feel free to play around with the throttle and speed. Maybe use
           * another PID controller to control the speed!
           */
-          
+
+	  double pre_cte;
+	  if(n==0){
+	    pre_cte = cte;
+	  }
+
+
+	  //take out the first 100 steps when change twiddle_p.
+	  if(n>100){	  
+	    total_err += cte*cte;
+	  }
+	  total_i_err += cte;
+
+
+	  if (k_circle == 0){
+	    twiddle_p[k_par] += twiddle_dp[k_par];
+	    k_circle = 1;
+	  }
+
+
+	  if(n == 1000 && k_circle == 1){
+	    if(total_err < best_err){
+	      best_err = total_err;
+	      twiddle_dp[k_par] *= 1.1;
+	      k_circle = 0;
+	      k_par += 1;
+	      k_par = k_par%3;
+	    }
+	    else{
+	      twiddle_p[k_par] -= 2*twiddle_dp[k_par];
+	      k_circle = 2;
+	    }
+	    n = 1;
+	    total_err = 0.0;
+	    total_i_err = 0.0;
+	  }
+
+
+	  if(n == 1000 && k_circle == 2){
+	    if(total_err < best_err){
+	      best_err = total_err;
+	      twiddle_dp[k_par] *= 1.1;
+	    }
+	    else{
+	      twiddle_p[k_par] += twiddle_dp[k_par];
+	      twiddle_dp[k_par] *= 0.9;
+	    }
+	    k_circle =0;
+	    n = 1;
+	    total_err = 0.0;
+	    total_i_err = 0.0;
+	    k_par += 1;
+	    k_par = k_par%3;
+	  }
+	  
+
+	  PID pid;
+	  pid.Init(twiddle_p[0],twiddle_p[1], twiddle_p[2]);
+	  pid.UpdateError(cte, pre_cte);
+	  steer_value = -pid.Kp*pid.p_error -pid.Ki*total_i_err -pid.Kd*pid.d_error;
+	  
+	  if(steer_value > 0.8){
+	    steer_value = 0.8;
+	  }
+
+	  if(steer_value < -0.8){
+	    steer_value = -0.8;
+	  }
+
+	  pre_cte = cte;
+	  n += 1;
+
           // DEBUG
-          std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
+          // std::cout << n << "-> CTE: " << cte << " Steering Value: " << steer_value << std::endl;;
+	  if(n ==1000){
+		  std::cout<< n_cout <<"--twiddle_p="<<twiddle_p[0]<<"  "<<twiddle_p[1]<<"  "<<twiddle_p[2]<<
+		"  "<<"twiddle_dp="<<twiddle_dp[0]<<"  "<<twiddle_dp[1]<<"  "<<twiddle_dp[2]<< std::endl;
+		  n_cout +=1;
+	  }
+
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
-          msgJson["throttle"] = 0.3;
+          msgJson["throttle"] = 0.35;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
-          std::cout << msg << std::endl;
+         // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
       } else {

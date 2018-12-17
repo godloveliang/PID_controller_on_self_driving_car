@@ -9,6 +9,7 @@ public:
   double p_error;
   double i_error;
   double d_error;
+  // double total_err;
 
   /*
   * Coefficients
@@ -16,7 +17,6 @@ public:
   double Kp;
   double Ki;
   double Kd;
-
   /*
   * Constructor
   */
@@ -35,12 +35,12 @@ public:
   /*
   * Update the PID error variables given cross track error.
   */
-  void UpdateError(double cte);
+  void UpdateError(double cte, double pre_cte);
 
   /*
   * Calculate the total PID error.
   */
-  double TotalError();
+  double TotalError( );
 };
 
 #endif /* PID_H */
