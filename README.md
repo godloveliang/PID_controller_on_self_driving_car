@@ -8,19 +8,18 @@ PID is the short of proportion, integration and differentiation. PID controls us
 
 - **P: proportion**  
 
-  The proportion item computes an output proportional to the cte(cross_track error, that is    the devation from the target). The formula like this:**steer_value_P = - kp*cte**  .
+  The proportion item computes an output proportional to the cte(cross_track error, that is    the devation from the target). The formula like this:**steer_value_P = - kp*cte**  .   
   
   As is show in the formula the P item can effectively control the vehicle to turn, make it close to the target as soon as possible, but it alse bring oscillates. So only P item is not enough.
   
-- **I: integration**  
+- **I: integration**   
 
-  The integration item computes an output relate to the sum up of  the cte over time.The formula like this: **steer_value_I = - kI*sum(cte)**
+  The integration item computes an output relate to the sum up of  the cte over time.The formula like this: **steer_value_I = - kI*sum(cte)**   
 
   The main function of thi item is to mitigate bias, for instance if a zero steering angle does not correspond to a straight trajectory. 
 
-- **D: differentiation**  
-
-  The integration item is used to mitigate the oscillations caused by the P item. The formula like this:**steer_value_D = - kD*(cte_t - cte_t-1)**. 
+- **D: differentiation**     
+  The integration item is used to mitigate the oscillations caused by the P item. The formula like this:   **steer_value_D = - kD*(cte_t - cte_t-1)**.   
 
   From the formula we can see that this item mainly used to punish the  large changes of cte, that is the oscillations.
   
