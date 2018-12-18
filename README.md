@@ -1,13 +1,46 @@
-# write_up
-This project use PID to control the steer_value of the car.
-## The effect each of the P, I, D components 
+# PID_Controls
 
-
-
-
-
-# CarND-Controls-PID
 Self-Driving Car Engineer Nanodegree Program
+
+## PID controls
+
+PID is the short of proportion, integration and differentiation. PID controls use the deviation from the target as the input signal, then control the vehicle to approach the target. Here use PID to control the steer value, to enable the vehicle to travel properly alon the path.
+
+- **P: proportion**
+  The proportion item computes an output proportional to the cte(cross_track error, that is    the devation from the target). The formula like this:**steer_value_P = - kp*cte**  .
+  
+  As is show in the formula the P item can effectively control the vehicle to turn, make it close to the target as soon as possible, but it alse bring oscillates. So only P item is not enough.
+  
+- **I: integration**
+  The integration item computes an output relate to the sum up of  the cte over time.The formula like this: **steer_value_I = - kI*sum(cte)**
+
+  The main function of thi item is to mitigate bias, for instance if a zero steering angle does not correspond to a straight trajectory. 
+
+- **D: differentiation**  
+  The integration item is used to mitigate the oscillations caused by the P item. The formula like this:**steer_value_D = - kD*(cte_t - cte_t-1)**. 
+
+  From the formula we can see that this item mainly used to punish the  large changes of cte, that is the oscillations.
+  
+
+## Extension  
+
+#### Emergency braking
+In order to mitigate the jerk  and can slow down at the sharp turn,  a viable solution was to brake and reduce the throttle  for a few iterations when the angle of the car change too quickly . but this is at the cost of reduced speed.
+
+#### Smoothened steering angle
+Analyze the output data and find that the output of the PID controller can result in jerky steering, causing the car to oscillate. In particular, sometimes very large value pop up, leading to very large oscilate. so values are compressed when it beyond a certain range. Thus the steer_values are smoothened.
+
+Using a weighted average of the previous and the current steering angle. can also make the trajectory much smoother and  to achieve higher speeds.
+
+## Hyperparameter Tuning
+
+In the history of the first submission i use twiddle to finde the best parameters, but the results were not good,it  always hover around the initial value I set. So this time I changed my scheme, added "Emergency braking"  and "Smoothened steering angle"  two method, and get the parameters manually. The parameters used was roughly get as follows:
+- 1. Set an initial KP value  that can basically keep the car on the road.
+- 2. increase KD until oscillations not so obvious.
+- 3. If  cross the boundary line
+--    if slow reactivity  : reduce the weight of pre_steers, increase KP or KI
+--    if oscillations :  reduce KP, KI.
+
 
 ---
 

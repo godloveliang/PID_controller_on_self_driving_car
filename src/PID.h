@@ -9,14 +9,18 @@ public:
   double p_error;
   double i_error;
   double d_error;
-  // double total_err;
+
+  //pre cte
+  double pre_cte;
 
   /*
   * Coefficients
   */ 
-  double Kp;
-  double Ki;
-  double Kd;
+  double kp;
+  double ki;
+  double kd;
+
+  double tau;
   /*
   * Constructor
   */
@@ -30,17 +34,17 @@ public:
   /*
   * Initialize PID.
   */
-  void Init(double Kp, double Ki, double Kd);
+  void Init(double kp, double ki, double kd, double tau);
 
   /*
   * Update the PID error variables given cross track error.
   */
-  void UpdateError(double cte, double pre_cte);
+  void UpdateError(double cte);
 
   /*
   * Calculate the total PID error.
   */
-  double TotalError( );
+  double steer_val(double speed );
 };
 
 #endif /* PID_H */
