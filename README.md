@@ -35,12 +35,15 @@ Using a weighted average of the previous and the current steering angle. can als
 ## Hyperparameter Tuning
 
 In the history of the first submission i use twiddle to finde the best parameters, but the results were not good,it  always hover around the initial value I set. So this time I changed my scheme, added "Emergency braking"  and "Smoothened steering angle"  two method, and get the parameters manually. The parameters used was roughly get as follows:
-- 1. Set an initial KP value  that can basically keep the car on the road.
-- 2. increase KD until oscillations not so obvious.
-- 3. If  cross the boundary line
---    if slow reactivity  : reduce the weight of pre_steers, increase KP or KI
---    if oscillations :  reduce KP, KI.
+-  1.   Set an initial KP value  that can basically keep the car on the road.
 
+- 2. increase KD until oscillations not so obvious.
+
+- 3. If  cross the boundary line
+
+--         if slow reactivity  : reduce the weight of pre_steers, increase KP or KI
+
+--         if oscillations :  reduce KP, KI.
 
 ---
 
