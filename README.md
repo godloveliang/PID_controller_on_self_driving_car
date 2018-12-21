@@ -2,6 +2,10 @@
 
 Self-Driving Car Engineer Nanodegree Program
 
+[click here for YouTube video](https://youtu.be/svYFGAbVIT8)
+[clik here for bilibili vedio](http://www.bilibili.com/video/av38516728)
+
+
 ## PID controls
 
 PID is the short of proportion, integration and differentiation. PID controls use the deviation from the target as the input signal, then control the vehicle to approach the target. Here use PID to control the steer value, to enable the vehicle to travel properly alon the path.
@@ -19,7 +23,7 @@ PID is the short of proportion, integration and differentiation. PID controls us
   The main function of thi item is to mitigate bias, for instance if a zero steering angle does not correspond to a straight trajectory. 
 
 - **D: differentiation**     
-  The integration item is used to mitigate the oscillations caused by the P item. The formula like this:   **steer_value_D = - kD*(cte_t - cte_t-1)**.   
+  The integration item is used to mitigate the oscillations caused by the P item. The formula like this:    **steer_value_D = - kD*(cte_t - cte_t-1)**.    
 
   From the formula we can see that this item mainly used to punish the  large changes of cte, that is the oscillations.
   
